@@ -1,8 +1,17 @@
 const fs = require('fs');
 const util = require('util');
 
-// Promise version of fs.readFile
-const readFromFile = util.promisify(fs.readFile);
+// Promise version of fs.readFile that also parses JSON
+const readFromFile = async (filePath) => {
+  const readFile = util.promisify(fs.readFile);
+  try {
+    const data = await readFile(filePath, 'utf8'); // Ensure encoding is set to get a string
+    return JSON.parse(data); // Parse and return the JSON data
+  } catch (error) {
+    console.error(`Error reading from ${filePath}:`, error);
+    throw error; // Rethrow to allow caller to handle
+  }
+};
 /**
  *  Function to write data to the JSON file given a destination and some content
  *  @param {string} destination The file you want to write to.
